@@ -21,6 +21,11 @@ class MLE():
 
     def preprocessing(self):
 
+        self.synthetic_dataframe = self.synthetic_dataframe.dropna(axis=1)
+        self.real_dataframe      =self.real_dataframe.dropna(axis =1)
+
+
+        #get_dummies of the categorical columns to apply the ML algorithms
         cols = self.synthetic_dataframe.columns
         num_cols = self.synthetic_dataframe._get_numeric_data().columns
         cat_cols = list(set(cols) - set(num_cols))
@@ -33,6 +38,9 @@ class MLE():
 
     def eval(self):
 
+        #to compare the performance of ML models in synthetic data, this function have two steps:
+
+        #1)train in synthetic and test in real data
         train = self.synthetic_dataframe.drop(self.target_column, axis = 1)
         train_target = self.synthetic_dataframe[self.target_column]
 
@@ -64,8 +72,7 @@ class MLE():
 
         report_synthetic = [acc_abc, acc_lrc, acc_mlpc,  acc_dtc]
 
-        ## original acc
-
+        ##2) train and test in real data 
         X = self.real_dataframe.drop(self.target_column, axis = 1)
         y = self.real_dataframe[self.target_column]
 

@@ -21,8 +21,8 @@ class MLE():
 
     def preprocessing(self):
 
-        self.synthetic_dataframe = self.synthetic_dataframe.dropna(axis=1)
-        self.real_dataframe      =self.real_dataframe.dropna(axis =1)
+        self.synthetic_dataframe = self.synthetic_dataframe.dropna(axis=0)
+        self.real_dataframe      =self.real_dataframe.dropna(axis =0)
 
 
         #get_dummies of the categorical columns to apply the ML algorithms
@@ -46,6 +46,8 @@ class MLE():
 
         test = self.real_dataframe.drop(self.target_column, axis = 1)
         test_target = self.real_dataframe[self.target_column]
+
+        test = test[list(train.columns)]
 
         ABC = AdaBoostClassifier(random_state=1)
         ABC.fit(train, train_target)

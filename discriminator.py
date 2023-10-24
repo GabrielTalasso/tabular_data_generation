@@ -22,8 +22,8 @@ class Discriminator():
         
     def preprocessing(self):
 
-        self.synthetic_dataframe = self.synthetic_dataframe.dropna(axis=1)
-        self.real_dataframe      =self.real_dataframe.dropna(axis =1)
+        self.synthetic_dataframe = self.synthetic_dataframe.dropna(axis=0)
+        self.real_dataframe      =self.real_dataframe.dropna(axis =0)
 
 
         #get_dummies of the categorical columns to apply the ML algorithms

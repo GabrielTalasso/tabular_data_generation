@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+import sdv
+from sdv.evaluation.single_table import evaluate_quality
 
 from ML_efficiency import MLE
 from discriminator import Discriminator
@@ -60,6 +62,35 @@ class Evaluation():
 
         return results
     
+    def eval_Sdv(self, dataset, dataset_name):
+
+        real_duplicates = len(self.real_dataset)-len(self.real_dataset.drop_duplicates())
+        synthetic_duplicates = len(self.real_dataset.append(dataset))-len(self.real_dataset.append(dataset).drop_duplicates())
+
+        new_duplicates = synthetic_duplicates - real_duplicates
+
+        metadata = sdv.metadata.SingleTableMetadata()
+        metadata.detect_from_dataframe(data = self.real_dataset)
+
+        quality_report = evaluate_quality(
+                        self.real_dataset,
+                        dataset,
+                        metadata
+                    )
+        
+        score = quality_report.get_score()
+
+
+        results = {'dataset': dataset_name,
+                   'duplicates': new_duplicates,
+                   'sdv_score': score
+        }
+
+        return results
+         
+
+
+    
 
     def eval(self):
 
@@ -68,6 +99,10 @@ class Evaluation():
 
             results = {}
 
+            results_sdv = self.eval_Sdv(dataset = dataset,
+                                        dataset_name=name) 
+            results.update(results_sdv)
+
             results_mle = self.eval_MLE(dataset = dataset,
                                         dataset_name=name)            
             results.update(results_mle)
@@ -75,8 +110,6 @@ class Evaluation():
             results_discriminator = self.eval_Discriminator(dataset = dataset,
                                         dataset_name=name)            
             results.update(results_discriminator)
-
-            print(results)
 
             if i == 0:
                 self.complete_evaluation = pd.DataFrame(results, index=[0])
